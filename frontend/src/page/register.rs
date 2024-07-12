@@ -89,6 +89,7 @@ pub fn Register(cx: Scope) -> Element {
     //sync handler does it in the webpage
     //async handler needs to call out elsewhwer
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
+        let username = uchat_domain::Username::new(&ev.value);
         page_state.with_mut(|state| state.username.set(ev.value.clone()))
     });
 
@@ -101,6 +102,7 @@ pub fn Register(cx: Scope) -> Element {
             class: "flex flex-col gap-5",
             prevent_default: "onsubmit",
             onsubmit: move |_| {},
+            // need restrictions on username and password
             UsernameInput {
                 // .with is essentially read only
                 state: page_state.with(|state| state.username.clone()),
