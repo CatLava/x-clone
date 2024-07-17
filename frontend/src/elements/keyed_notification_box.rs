@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
-use dioxus::{prelude::*, rsx::Element};
+use std::collections::hash_map::Values;
+use dioxus::{prelude::*};
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
@@ -10,6 +11,8 @@ pub struct KeyedNotifications {
     pub inner: HashMap<String, String>,
 }
 
+// This is primarily delegated functionality on a hashmap
+// press ctrl + . to see deletegations for HashMap
 impl KeyedNotifications {
     pub fn set<K, V>(&mut self, key: K, value: V)
     where 
@@ -19,12 +22,12 @@ impl KeyedNotifications {
         self.inner.insert(key.into(), value.into());
     }
     
-    pub fn remove<K: AsRef<str>>(&mut self, k: &Q) 
-    {
-        self.inner.remove(k.as_ref())
+    pub fn remove<K: AsRef<str>>(&mut self, key: K) 
+    {   // ASref str because it requires borrowed str
+        self.inner.remove(key.as_ref());
     }
-    
-    pub fn messages(&self) -> std::collections::hash_map::Values<'_, String, String> {
+    //std::collections::hash_map::
+    pub fn messages(&self) -> Values<'_, String, String> {
         self.inner.values()
     }
 
@@ -43,7 +46,7 @@ pub struct KeyedNotificationsProps<'a> {
 
 pub fn KeyedNotificationBox<'a>(cx: Scope<'a, KeyedNotificationsProps<'a>>) -> Element {
     let notifications = cx.props.notifications.messages().map(|msg| {
-        rsx!{li { "{msg}"}}
+        rsx!{li { "{msg}"} }
     });
 
     let legend = cx.props.legend.unwrap_or("Errors");
@@ -54,7 +57,7 @@ pub fn KeyedNotificationBox<'a>(cx: Scope<'a, KeyedNotificationsProps<'a>>) -> E
                 class: "fieldset border-red-300 rounded",
                 legend {
                     class: "bg-red-300 px-4",
-                    {legend}
+                    "{legend}"
                 }
                 ul {
                     class: "list-disc ml-4",
