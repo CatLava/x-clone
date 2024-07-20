@@ -1,6 +1,9 @@
 // serve images and handle api requests
 use axum::extract::FromRef;
 use uchat_query::{AsyncConnection, AsyncConnectionPool, QueryError};
+use color_eyre::{Result, Help, eyre::Context};
+
+pub mod logging;
 
 #[derive(FromRef, Clone)]
 pub struct AppState{
