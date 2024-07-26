@@ -79,12 +79,12 @@ async fn run() -> Result<()> {
 
     // new router function
 
-    let router = uchat_server::new_router(state);
+    let router = uchat_server::router::new_router(state);
 
     let server = axum::Server::try_bind(&args.bind)
         .wrap_err_with(|| " server initialization error")
         .with_suggestion(|| "check bind address")
-        .with_suggestion(|| "check if other service using same port");
+        .with_suggestion(|| "check if other service using same port")?;
 
 
     let server = server.serve(router.into_make_service());

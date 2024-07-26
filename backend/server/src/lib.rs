@@ -2,9 +2,10 @@
 use axum::extract::FromRef;
 use uchat_query::{AsyncConnection, AsyncConnectionPool, QueryError};
 use color_eyre::{Result, Help, eyre::Context};
+use color_eyre::eyre::WrapErr;
 
 pub mod logging;
-
+pub mod router;
 #[derive(FromRef, Clone)]
 pub struct AppState{
     // seen in query
@@ -20,6 +21,7 @@ impl AppState {
 }
 
 pub mod cli {
+    use color_eyre::{eyre::Context, Section};
     use rand::{CryptoRng, RngCore};
     use uchat_crypto::sign::{encode_private_key, EncodedPrivateKey, Keys};
 
