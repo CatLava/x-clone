@@ -64,7 +64,7 @@ async fn run() -> Result<()> {
     info!(target: "uchat_server", database_url = args.database_url, "connecting to db");
     let db_pool = uchat_query:: AsyncConnectionPool::new(&args.database_url)
         .await
-        .with_suggestion(|| " check database URL")
+        .with_suggestion(|| "check database URL")
         .with_suggestion(|| "ensure correct db access rights")
         .with_suggestion(|| "make sure db exists")?;
 

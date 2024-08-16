@@ -57,3 +57,12 @@ db-reset:
 db-new-migration NAME:
     diesel migration generate {{ NAME }}
 
+start-db-engine:
+    # docker build -t postgres-custom:latest .
+    docker run -d \
+    -e POSTGRES_USER=evan \
+    -e POSTGRES_PASSWORD=evan \
+    -e POSTGRES_DB=uchat \
+    -p 5432:5432 \
+    postgres-custom:latest
+
