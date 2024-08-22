@@ -6,6 +6,8 @@ use color_eyre::eyre::WrapErr;
 
 pub mod logging;
 pub mod router;
+pub mod error;
+pub mod extractor; 
 #[derive(FromRef, Clone)]
 pub struct AppState{
     // seen in query

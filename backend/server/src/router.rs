@@ -18,27 +18,31 @@ pub fn new_router(state: AppState) -> axum::Router {
         .layer(
             // arrange the layers properly
             ServiceBuilder::new()
-            .layer(
-                TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new().include_headers(true))
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(DefaultOnResponse::new()
-                    .level(Level::INFO)
-                    .latency_unit(LatencyUnit::Micros)),
-            ),
-        
-        )
-        .layer(
-            // CORS layer allows comms between FE and BE
-            CorsLayer::new()
-                .allow_methods([Method::GET, Method::POST, Method::OPTIONS, Method::PATCH, Method::PUT])
-                .allow_credentials(true)
-                .allow_origin(
-                    std::env::var("FRONTEND_URL")
-                    .unwrap()
-                    .parse::<HeaderValue>()
-                    .unwrap()
+                .layer(
+                    TraceLayer::new_for_http()
+                    .make_span_with(DefaultMakeSpan::new().include_headers(true))
+                    .on_request(DefaultOnRequest::new().level(Level::INFO))
+                    .on_response(DefaultOnResponse::new()
+                        .level(Level::INFO)
+                        .latency_unit(LatencyUnit::Micros)
+                    ),
                 )
-                .allow_headers([CONTENT_TYPE])
+                .layer(
+                    // CORS layer allows comms between FE and BE
+                    CorsLayer::new()
+                        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+                        .allow_credentials(true)
+                        .allow_origin(
+                            std::env::var("FRONTEND_URL")
+                            .unwrap()
+                            .parse::<HeaderValue>()
+                            .unwrap()
+                        )
+                        .allow_headers([CONTENT_TYPE])
+                )
+                .layer(
+                    axum::Extension(state.clone()),
+                )
         )
+        .with_state(state)
 }
