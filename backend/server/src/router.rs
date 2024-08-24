@@ -1,14 +1,19 @@
-use crate::AppState;
-use axum::{http::HeaderValue, routing::get, Router};
+use crate::{handler::with_public_handler, AppState};
+use axum::{http::HeaderValue, routing::{get, post}, Router};
 use hyper::{header::CONTENT_TYPE, Method};
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, OnResponse, TraceLayer}, LatencyUnit};
 use tracing::Level;
+use uchat_endpoint::{user::endpoint::CreateUser, Endpoint};
+
 
 
 pub fn new_router(state: AppState) -> axum::Router {
     let public_routes = Router::new()
-        .route("/", get(move || async { "this is the root page"} ));
+        .route("/", get(move || async { "this is the root page"} ))
+        .route(
+        CreateUser::URL,
+post(with_public_handler::<CreateUser>));
     // check if user is logged in
     let authorized_routes = Router::new();
 
