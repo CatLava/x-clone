@@ -8,6 +8,8 @@ use crate::maybe_class;
 use crate::sync_handler;
 
 use crate::prelude::*;
+use crate::util::api_client;
+use crate::util::ApiClient;
 
 
 pub struct PageState {
@@ -92,11 +94,38 @@ pub fn PasswordInput<'a>(
     })
 }
 pub fn Register(cx: Scope) -> Element {
+    let api_client = ApiClient::global();
     // cx gets saved into the scope using the state
     // state keeps info across multiple function calls 
     let page_state = PageState::new(cx);
     let page_state = use_ref(cx, || page_state);
 
+    let form_onsubmit = 
+        async_handler(&cx, [api_client, page_state],
+        move |_| async move {
+            // import within the closure so they don't leak out in the form
+            use chat_api::user::endpoint::{CreateUser, CreateUserOk};
+
+            let request_data = {
+                use uchat_domain::{Password, Username};
+                CreateUser {
+                    username: Username::new(
+                        page_state.with(
+                            |state| state.username
+                            .current()
+                            .as_str()))
+                            .unwrap(),
+                    password: Password::new(
+                        page_state.with(
+                            |state| state.password
+                            .current()
+                            .as_str()))
+                            .unwrap(),
+                }
+            };
+            let response = fetch_json!(<CreateUserOk>, api_client, request_data);
+        }
+        )
     //sync handler does it in the webpage
     //async handler needs to call out elsewhwer
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
