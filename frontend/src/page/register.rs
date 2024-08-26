@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 
 use crate::elements::keyed_notification_box::KeyedNotifications;
 use crate::elements::KeyedNotificationBox;
+use crate::fetch_json;
 use crate::maybe_class;
 use crate::sync_handler;
 
@@ -101,10 +102,10 @@ pub fn Register(cx: Scope) -> Element {
     let page_state = use_ref(cx, || page_state);
 
     let form_onsubmit = 
-        async_handler(&cx, [api_client, page_state],
-        move |_| async move {
+        async_handler!(&cx, [api_client, page_state],
+            move |_| async move {
             // import within the closure so they don't leak out in the form
-            use chat_api::user::endpoint::{CreateUser, CreateUserOk};
+            use uchat_endpoint::user::endpoint::{CreateUser, CreateUserOk};
 
             let request_data = {
                 use uchat_domain::{Password, Username};
@@ -113,19 +114,23 @@ pub fn Register(cx: Scope) -> Element {
                         page_state.with(
                             |state| state.username
                             .current()
-                            .as_str()))
+                            .to_string()))
                             .unwrap(),
                     password: Password::new(
                         page_state.with(
                             |state| state.password
                             .current()
-                            .as_str()))
+                            .to_string()))
                             .unwrap(),
                 }
             };
             let response = fetch_json!(<CreateUserOk>, api_client, request_data);
+            match response {
+                Ok(res) => (),
+                Err(e) => (),
+            }
         }
-        )
+        );
     //sync handler does it in the webpage
     //async handler needs to call out elsewhwer
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
@@ -154,7 +159,7 @@ pub fn Register(cx: Scope) -> Element {
         form {
             class: "flex flex-col gap-5",
             prevent_default: "onsubmit",
-            onsubmit: move |_| {},
+            onsubmit: form_onsubmit,
             // need restrictions on username and password
             UsernameInput {
                 // .with is essentially read only
