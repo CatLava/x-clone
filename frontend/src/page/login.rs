@@ -95,7 +95,7 @@ pub fn PasswordInput<'a>(
         }
     })
 }
-pub fn Register(cx: Scope) -> Element {
+pub fn Login(cx: Scope) -> Element {
     let api_client = ApiClient::global();
     // cx gets saved into the scope using the state
     // state keeps info across multiple function calls 
@@ -106,25 +106,9 @@ pub fn Register(cx: Scope) -> Element {
         async_handler!(&cx, [api_client, page_state],
             move |_| async move {
             // import within the closure so they don't leak out in the form
-            use uchat_endpoint::user::endpoint::{CreateUser, CreateUserOk};
+            use uchat_endpoint::user::endpoint::{Login, LoginOk};
 
-            let request_data = {
-                use uchat_domain::{Password, Username};
-                CreateUser {
-                    username: Username::new(
-                        page_state.with(
-                            |state| state.username
-                            .current()
-                            .to_string()))
-                            .unwrap(),
-                    password: Password::new(
-                        page_state.with(
-                            |state| state.password
-                            .current()
-                            .to_string()))
-                            .unwrap(),
-                }
-            };
+            
             let response = fetch_json!(<CreateUserOk>, api_client, request_data);
             match response {
                 Ok(res) => (),
@@ -185,7 +169,7 @@ pub fn Register(cx: Scope) -> Element {
                 // r# is raw identifier to reuse key words
                 r#type: "submit",
                 disabled: !page_state.with(|state| state.can_submit()),
-                "Signup"
+                "Login"
             }
         }
     })
