@@ -9,6 +9,7 @@ pub mod router;
 pub mod error;
 pub mod extractor; 
 pub mod handler;
+pub mod session;
 
 #[derive(FromRef, Clone)]
 pub struct AppState{
