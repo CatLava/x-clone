@@ -4,6 +4,7 @@ extern crate diesel_derive_newtype;
 #[cfg(test)]
 pub mod test_db;
 pub mod schema;
+pub mod session;
 pub use diesel::result::Error as DieselError;
 
 pub mod error;
