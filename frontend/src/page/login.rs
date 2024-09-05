@@ -10,6 +10,7 @@ use crate::maybe_class;
 use crate::sync_handler;
 
 use crate::prelude::*;
+use crate::util;
 use crate::util::api_client;
 use crate::util::ApiClient;
 
@@ -107,15 +108,38 @@ pub fn Login(cx: Scope) -> Element {
             move |_| async move {
             // import within the closure so they don't leak out in the form
             use uchat_endpoint::user::endpoint::{Login, LoginOk};
-
+            let request_data = {
+                use uchat_domain::{Password, Username};
+                Login {
+                    username: Username::new(
+                        page_state.with(
+                            |state| state.username
+                            .current()
+                            .to_string()))
+                            .unwrap(),
+                    password: Password::new(
+                        page_state.with(
+                            |state| state.password
+                            .current()
+                            .to_string()))
+                            .unwrap(),
+                }
+            };
             
-            let response = fetch_json!(<CreateUserOk>, api_client, request_data);
+            let response = fetch_json!(<LoginOk>, api_client, request_data);
             match response {
-                Ok(res) => (),
+                Ok(res) => {
+                    // create cookie and save to browser
+                    crate::util::cookie::set_session(
+                        res.session_signature,
+                        res.session_id,
+                        res.session_expires
+                    );
+
+                },
                 Err(e) => (),
             }
-        }
-        );
+        });
     //sync handler does it in the webpage
     //async handler needs to call out elsewhwer
     let username_oninput = sync_handler!([page_state], move |ev: FormEvent| {
