@@ -4,7 +4,7 @@ use axum::{async_trait, Json};
 use hyper::StatusCode;
 use tracing::info;
 use uchat_endpoint::user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
-use uchat_query::{schema::{bookmarks::user_id, web::fingerprint}, session};
+use uchat_query::{session};
 
 use crate::{error::ApiResult, extractor::DbConnection, AppState};
 
