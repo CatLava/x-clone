@@ -18,7 +18,12 @@ impl Endpoint for CreateUser {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct CreateUserOk {
     pub user_id: UserId,
-    pub username: Username
+    pub username: Username,
+    // attach session info upon creation
+    pub session_signature: String,
+    // API server will send back session id. 
+    pub session_id: SessionId,
+    pub session_expires: DateTime<Utc>,
 }
 
 

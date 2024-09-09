@@ -102,8 +102,10 @@ pub fn Register(cx: Scope) -> Element {
     let page_state = PageState::new(cx);
     let page_state = use_ref(cx, || page_state);
 
+    let router = use_router(cx);
+
     let form_onsubmit = 
-        async_handler!(&cx, [api_client, page_state],
+        async_handler!(&cx, [api_client, page_state, router],
             move |_| async move {
             // import within the closure so they don't leak out in the form
             use uchat_endpoint::user::endpoint::{CreateUser, CreateUserOk};
@@ -127,7 +129,15 @@ pub fn Register(cx: Scope) -> Element {
             };
             let response = fetch_json!(<CreateUserOk>, api_client, request_data);
             match response {
-                Ok(res) => (),
+                Ok(res) => {
+                    // create cookie and save to browser
+                    crate::util::cookie::set_session(
+                        res.session_signature,
+                        res.session_id,
+                        res.session_expires
+                    );
+                    router.navigate_to(page::HOME)
+                },
                 Err(e) => (),
             }
         }
@@ -185,7 +195,7 @@ pub fn Register(cx: Scope) -> Element {
                 // r# is raw identifier to reuse key words
                 r#type: "submit",
                 disabled: !page_state.with(|state| state.can_submit()),
-                "Signup"
+                "SignUp"
             }
         }
     })

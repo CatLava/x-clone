@@ -34,9 +34,9 @@ pub fn set_session(signature: String, id: SessionId, expires: DateTime<Utc>) {
         .set_cookie(&cookie)
         .unwrap();
 
-    
+
     let cookie = format_cookie(
-        format_kv(uchat_cookie::SESSION_ID,
+        format_kv(uchat_cookie::SESSION_SIGNATURE,
          signature),
          expires
         );
