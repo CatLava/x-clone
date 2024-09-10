@@ -29,6 +29,6 @@
     }
 
     .navbar-border-color {
-        @apply border-spacing-x-9;
+        @apply border-slate-300;
     }
 }
