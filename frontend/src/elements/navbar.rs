@@ -2,7 +2,52 @@
 
 use dioxus::prelude::*;
 use crate::prelude::*;
+use crate::maybe_class;
 
+
+#[inline_props]
+pub fn NewPostPopup(cx: Scope, hide: UseState<bool>) -> Element {
+    
+    let hide_class = maybe_class!("hidden", *hide.get());
+    println!("Hide class: {}", hide_class); // Debug print
+
+    const BUTTON_CLASS: &str = "grid grid-cols-[20px_1fr] gap-4 pl-4 justify-center items-center w-full h-12 border-y navbar-border-color";
+    println!("Button class: {}", BUTTON_CLASS); // Debug print
+
+    cx.render(rsx! {
+        div {
+            class: "flex flex-col absolute right-0 bottom-[var(--navbar-height)] w-28 items-center {hide_class} navbar-bg-color text-white text-sm",
+
+            div {
+                class: BUTTON_CLASS,
+                onclick: move |_| (),
+                img {
+                    class: "invert",
+                    src: "/static/icons/icon-poll.svg"
+                },
+                "Poll"
+            }
+            div {
+                class: BUTTON_CLASS,
+                onclick: move |_| (),
+                img {
+                    class: "invert",
+                    src: "/static/icons/icon-image.svg"
+                },
+                "Image"
+            }
+            div {
+                class: BUTTON_CLASS,
+                onclick: move |_| (),
+                img {
+                    class: "invert",
+                    src: "/static/icons/icon-messages.svg"
+                },
+                "Chat"
+            }
+        }
+    })
+}
 #[derive(Props)]
 pub struct NavButtonProps<'a> {
     img: &'a str,
@@ -20,7 +65,7 @@ pub fn NavButton<'a>(cx: Scope<'a, NavButtonProps<'a>>) -> Element {
         );
     cx.render(rsx! {
         button {
-            class: "cursor-pointer flex flex-col items-center justify-center h-full ",
+            class: "cursor-pointer flex flex-col items-center justify-center h-full",
             onclick: move |ev| cx.props.onclick.call(ev),
             img {
                 class: "invert",
@@ -38,6 +83,7 @@ pub fn NavButton<'a>(cx: Scope<'a, NavButtonProps<'a>>) -> Element {
 }
 
 pub fn Navbar(cx: Scope) -> Element {
+    let hide_new_post_popup  = use_state(cx, || true);
     cx.render(rsx! {
         nav {
             class: "max-w-[var(--content-max-width)] h-[var(--navbar-height)]
@@ -59,7 +105,11 @@ pub fn Navbar(cx: Scope) -> Element {
                 NavButton {
                     img: "/static/icons/icon-new-post.svg",
                     label: "Post",
-                    onclick: |_| (),
+                    onclick: move |_| {
+                        let is_hidden = *hide_new_post_popup.get();
+                        hide_new_post_popup.set(!is_hidden);
+                    }
+                    NewPostPopup { hide: hide_new_post_popup.clone() }
                 }
             }
         }
