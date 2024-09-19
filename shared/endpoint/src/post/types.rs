@@ -15,8 +15,6 @@ impl From<Chat> for Content {
     }
 }
 
-
-
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub enum Content {
     Chat(Chat)

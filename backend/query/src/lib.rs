@@ -4,7 +4,6 @@ extern crate diesel_derive_newtype;
 #[cfg(test)]
 pub mod test_db;
 pub mod schema;
-pub mod session;
 pub use diesel::result::Error as DieselError;
 
 pub mod error;
@@ -14,4 +13,7 @@ pub mod util;
 pub use util::{AsyncConnection, AsyncConnectionPool, OwnedAsyncConnection};
 
 pub mod user;
+pub mod post;
+pub mod session;
+
 

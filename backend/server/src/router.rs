@@ -1,4 +1,4 @@
-use crate::{handler::with_public_handler, AppState};
+use crate::{handler::{with_handler, with_public_handler}, AppState};
 use axum::{http::HeaderValue, routing::{get, post}, Router};
 use hyper::{header::CONTENT_TYPE, Method};
 use tower::ServiceBuilder;
@@ -13,12 +13,13 @@ pub fn new_router(state: AppState) -> axum::Router {
         .route("/", get(move || async { "this is the root page"} ))
         .route(
         CreateUser::URL,
-post(with_public_handler::<CreateUser>))
+            post(with_public_handler::<CreateUser>))
         .route(
             Login::URL,
-post(with_public_handler::<Login>));
+            post(with_public_handler::<Login>));
     // check if user is logged in
-    let authorized_routes = Router::new();
+    let authorized_routes = Router::new()
+        .route(NewPost::URL, post(with_handler::<NewPost>));
 
     Router::new()
         .merge(public_routes)
