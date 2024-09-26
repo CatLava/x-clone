@@ -36,4 +36,5 @@ mod prelude {
 
     pub use crate::util::{async_handler, sync_handler, maybe_class};
     pub use dioxus_router::{use_route, use_router};
+    pub use crate::util::ApiClient;
 }
