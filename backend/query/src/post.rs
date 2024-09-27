@@ -48,7 +48,7 @@ pub fn new(conn: &mut PgConnection, post: Post) -> Result<PostId, DieselError> {
     conn.transaction::<PostId, DieselError, _>(|conn| {
         // transaction allows multiple queries, numerous queries
         diesel::insert_into(schema::posts::table)
-            .value(&post)
+            .values(&post)
             .execute(conn)?;
         Ok(post.id)
     })

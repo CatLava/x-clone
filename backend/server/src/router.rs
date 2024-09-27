@@ -4,7 +4,7 @@ use hyper::{header::CONTENT_TYPE, Method};
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, OnResponse, TraceLayer}, LatencyUnit};
 use tracing::Level;
-use uchat_endpoint::{user::endpoint::CreateUser, Endpoint, user::endpoint::Login};
+use uchat_endpoint::{post::endpoint::NewPost, user::endpoint::{CreateUser, Login}, Endpoint};
 
 
 

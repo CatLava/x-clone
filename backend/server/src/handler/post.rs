@@ -3,8 +3,8 @@ use chrono::{Duration, Utc};
 use axum::{async_trait, Json};
 use hyper::StatusCode;
 use tracing::info;
-use uchat_endpoint::user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
-use uchat_query::session::{self, Session};
+use uchat_endpoint::{post::endpoint::{NewPost, NewPostOk}, user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk}};
+use uchat_query::{post::Post, session::{self, Session}};
 use uchat_domain::ids::*;
 
 use crate::{error::ApiResult, extractor::{DbConnection, UserSession}, AppState};
@@ -27,6 +27,6 @@ impl AuthorizedApiRequest for NewPost {
 
         let post_id = uchat_query::post::new(&mut conn, post)?;
 
-        Ok((StatusCode::Ok, Json(NewPostOk { post_id })))
+        Ok((StatusCode::OK, Json(NewPostOk { post_id })))
     }
 }
