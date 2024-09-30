@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 
+use chrono::Duration;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use uchat_endpoint::post::types::NewPostOptions;
@@ -101,11 +102,12 @@ pub fn HeadlineInput(cx: Scope, page_state: UseRef<PageState>) -> Element {
 pub fn NewChat(cx:Scope) -> Element {
     let api_client = ApiClient::global();
     let router = use_router(cx);
+    let toaster = use_toaster(cx);
     let page_state = use_ref(cx, PageState::default);
 
     let form_onsubmit = async_handler!(
         &cx,
-        [api_client, page_state, router],
+        [api_client, page_state, toaster,  router],
         move |_| async move {
             //keep types encapsulated here so they don't leak out
             use uchat_endpoint::post::endpoint::{NewPost, NewPostOk};
@@ -131,9 +133,13 @@ pub fn NewChat(cx:Scope) -> Element {
             let response = fetch_json!(<NewPostOk>, api_client, request);
             match response {
                 Ok(_) => {
+                    toaster.write().success("Posted!", Duration::seconds(3));
                     router.replace_route(page::HOME, None, None)
                 },
-                Err(e) => (),
+                Err(e) => {
+                    toaster.write().error(format!("Failed Post: {e}"), Duration::seconds(3));
+
+                },
             }
         }
     );
