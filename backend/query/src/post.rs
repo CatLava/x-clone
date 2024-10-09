@@ -17,13 +17,13 @@ pub struct Content(pub serde_json::Value);
 #[derive(Debug, Queryable, Selectable, Insertable )]
 #[diesel(table_name = schema::posts)]
 pub struct Post {
-    id : PostId,
-    user_id : UserId,
-    content : Content,
-    time_posted : DateTime<Utc>,
-    direct_message_to : Option<UserId>,
-    reply_to : Option<PostId>,
-    created_at : DateTime<Utc>,
+    pub id : PostId,
+    pub user_id : UserId,
+    pub content : Content,
+    pub time_posted : DateTime<Utc>,
+    pub direct_message_to : Option<UserId>,
+    pub reply_to : Option<PostId>,
+    pub created_at : DateTime<Utc>,
 }
 
 impl Post {
