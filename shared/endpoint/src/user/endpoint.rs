@@ -38,7 +38,7 @@ pub struct LoginOk {
     pub session_id: SessionId,
     pub session_expires: DateTime<Utc>,
 
-    pub disaply_name: Option<String>,
+    pub display_name: Option<String>,
     pub email: Option<String>,
     pub profile_image: Option<Url>,
     pub user_id: UserId,

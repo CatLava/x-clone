@@ -3,9 +3,9 @@ use chrono::{Duration, Utc};
 use axum::{async_trait, Json};
 use hyper::StatusCode;
 use tracing::info;
-use uchat_endpoint::{post::{endpoint::{NewPost, NewPostOk, TrendingPostOk, TrendingPosts}, types::PublicPost}, user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk}, RequestFailed};
+use uchat_endpoint::{post::{endpoint::{NewPost, NewPostOk, TrendingPostOk, TrendingPosts}, types::{LikeStatus, PublicPost}}, user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk}, RequestFailed};
 use uchat_query::{post::Post, session::{self, Session}, AsyncConnection};
-use uchat_domain::ids::*;
+use uchat_domain::{ids::*, Username};
 
 use crate::{error::{ApiError, ApiResult}, extractor::{DbConnection, UserSession}, AppState};
 
@@ -22,16 +22,19 @@ pub fn to_public(
 
     if let Ok(mut content) = serde_json::from_value(post.content.0) {
         // convert DB post to a public post 
-        PublicPost {
+        Ok(PublicPost {
             id: post.id,
-            by_user: (),
+            by_user: {
+                let profile = query_user::get(conn, post.user_id)?;
+                super::user::to_public(profile)?
+            },
             content: content,
             time_posted: post.time_posted,
             reply_to: {
                 match post.reply_to {
                     Some(other_post_id) => {
                         let original_post = query_post::get(conn, other_post_id)?;
-                        let original_user = query_user::het(conn, original_post.user_id)?;
+                        let original_user = query_user::get(conn, original_post.user_id)?;
                         Some((
                             Username::new(original_user.handle).unwrap(),
                             original_user.id,
@@ -47,7 +50,7 @@ pub fn to_public(
             likes: 0,
             dislikes: 0,
             boosts: 0,
-        }
+        })
     } else {
         Err(ApiError {
             code: Some(StatusCode::INTERNAL_SERVER_ERROR),
@@ -88,6 +91,20 @@ impl AuthorizedApiRequest for TrendingPosts {
         session: UserSession,
         state: AppState,
     ) -> ApiResult<Self::Response> {
+        use uchat_query::post as query_post;
 
+        let mut posts = vec![];
+
+        for post in query_post::get_trending(&mut conn)? {
+            let post_id = post.id;
+            match to_public(&mut conn, post, Some(&session)) {
+                Ok(post) => posts.push(post),
+                Err(e) => {
+                    tracing::error!(err = %e.err, post_id = ?post_id, "post contains invalid data")
+                }
+            }
+        }
+
+        Ok((StatusCode::OK, Json(TrendingPostOk { posts })))
     }
 }

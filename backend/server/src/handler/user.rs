@@ -3,17 +3,31 @@ use chrono::{Duration, Utc};
 use axum::{async_trait, Json};
 use hyper::StatusCode;
 use tracing::info;
-use uchat_endpoint::user::endpoint::{CreateUser, CreateUserOk, Login, LoginOk};
-use uchat_query::session::{self, Session};
-use uchat_domain::ids::*;
+use uchat_endpoint::user::{endpoint::{CreateUser, CreateUserOk, Login, LoginOk}, types::PublicUserProfile};
+use uchat_query::{session::{self, Session}, user::User, AsyncConnection};
+use uchat_domain::{ids::*, user::DisplayName};
 
-use crate::{error::ApiResult, extractor::DbConnection, AppState};
+use crate::{error::ApiResult, extractor::{DbConnection, UserSession}, AppState};
 
 use super::PublicApiRequest;
 
 #[derive(Clone)]
 pub struct SessionSignature(String);
 
+
+pub fn to_public(
+    user: User,
+) -> ApiResult<PublicUserProfile> {
+    Ok(PublicUserProfile {
+            id: user.id,
+            display_name: user.display_name.and_then(|name| DisplayName::new(name).ok()),
+            handle: user.handle,
+            profile_image: None,
+            created_at: user.created_at,
+            am_following: false,
+        }
+    )
+}
 pub fn new_session(
     state: &AppState,
     conn: &mut uchat_query::AsyncConnection,
@@ -104,7 +118,7 @@ impl PublicApiRequest for Login {
                 session_id: session.id,
                 session_expires: Utc::now() + session_duration,
                 session_signature: signature.0,
-                disaply_name: user.dispay_name,
+                display_name: user.display_name,
                 email: user.email,
                 profile_image: None,
                 user_id: user.id

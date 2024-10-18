@@ -45,7 +45,7 @@ pub struct User {
     pub email: Option<String>,
     pub email_confirmed: Option<DateTime<Utc>>,
     pub password_hash: String,
-    pub dispay_name: Option<String>,
+    pub display_name: Option<String>,
     pub handle: String, 
     pub created_at: DateTime<Utc>,
     pub profile_image: Option<String>,
