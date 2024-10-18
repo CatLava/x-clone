@@ -16,11 +16,10 @@ pub struct NewPostOk {
 
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct TrendingPosts {
- 
-}
+pub struct TrendingPosts;
+
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct TrendingPostOk {
+pub struct TrendingPostsOk {
     pub posts: Vec<PublicPost>, 
 }
