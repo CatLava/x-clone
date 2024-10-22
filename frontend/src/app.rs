@@ -4,10 +4,12 @@ use dioxus::prelude::*;
 use dioxus_router::{Router, Route};
 use fermi::{use_init_atom_root, AtomRef};
 
-use crate::{elements::{navbar::Navbar, toaster::{ToastRoot, Toaster}}, prelude::*};
+use crate::{elements::{navbar::Navbar, post::PostManager, toaster::{ToastRoot, Toaster}}, prelude::*};
 
 //creates a default toaster when the application runs
 pub static TOASTER: AtomRef<Toaster> = |_| Toaster::default();
+pub static POSTMANAGER: AtomRef<PostManager> = |_| PostManager::default();
+
 
 pub fn App(cx: Scope) -> Element {
     use_init_atom_root(cx);
