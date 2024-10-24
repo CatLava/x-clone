@@ -3,17 +3,18 @@
 pub mod content;
 pub mod actionbar;
 
-use std::collections::HashMap;
 use crate::prelude::*;
-use crate::maybe_class;
 use chrono::{DateTime, Duration, Utc};
 use dioxus::prelude::*;
 use fermi::use_atom_ref;
 use fermi::UseAtomRef;
 use indexmap::IndexMap;
 use uchat_domain::ids::PostId;
-use uchat_endpoint::post::types::{PublicPost};
-use crate::elements::post::content::Content;
+use uchat_endpoint::post::types::PublicPost;
+use crate::{
+    elements::post::{actionbar::Actionbar, content::Content},
+    prelude::*,
+};
 
 
 pub fn use_post_manager(cx: &ScopeState) -> &UseAtomRef<PostManager> {
@@ -120,8 +121,8 @@ pub fn PublicPostEntry(cx: Scope, post_id: PostId) -> Element {
                 //content
                 Content {
                     post: this_post
-                }
-                // action bar
+                },
+                Actionbar {post_id: this_post.id},
                 hr {},
             }
 

@@ -54,6 +54,8 @@ pub fn Bookmark(cx: Scope, post_id: PostId, bookmarked: bool) -> Element {
         }
     })
 }
+
+#[inline_props]
 pub fn Actionbar(cx: Scope, post_id: PostId) -> Element {
     let post_manager = use_post_manager(cx);
 
@@ -66,6 +68,10 @@ pub fn Actionbar(cx: Scope, post_id: PostId) -> Element {
             class: "flex flex-row justify-between w-full opacity-70 mt-4",
             //boost
             //bookmark
+            Bookmark {
+                bookmarked: this_post.bookmarked,
+                post_id: this_post_id,
+            }
             //like
             //comment
         }
