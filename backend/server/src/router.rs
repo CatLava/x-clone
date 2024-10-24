@@ -4,7 +4,7 @@ use hyper::{header::CONTENT_TYPE, Method};
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, OnResponse, TraceLayer}, LatencyUnit};
 use tracing::Level;
-use uchat_endpoint::{post::endpoint::{NewPost, TrendingPosts}, user::endpoint::{CreateUser, Login}, Endpoint};
+use uchat_endpoint::{post::endpoint::{Bookmark, NewPost, TrendingPosts}, user::endpoint::{CreateUser, Login}, Endpoint};
 
 
 
@@ -20,6 +20,8 @@ pub fn new_router(state: AppState) -> axum::Router {
     // check if user is logged in
     let authorized_routes = Router::new()
         .route(NewPost::URL, post(with_handler::<NewPost>))
+        .route(Bookmark::URL, post(with_handler::<Bookmark>))
+
         .route(TrendingPosts::URL, post(with_handler::<TrendingPosts>));
 
 
