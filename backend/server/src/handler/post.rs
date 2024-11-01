@@ -143,3 +143,40 @@ impl AuthorizedApiRequest for Bookmark {
         ))
     }
 }
+
+#[async_trait]
+impl AuthorizedApiRequest for React {
+    type Response = (StatusCode, Json<ReactOk>);
+
+    async fn process_request(
+        self,
+        DbConnection(mut conn): DbConnection,
+        session: UserSession,
+        state: AppState,
+    ) -> ApiResult<Self::Response> {
+        use uchat_endpoint::post::types::LikeStatus;
+
+        let reaction = uchat_query::post::Reaction {
+            post_id: self.post_id,
+            user_id: session.user_id,
+            reacion: None,
+            like_status: match self.like_status {
+                LikeStatus::Like => 1,
+                LikeStatus::Dislike => -1,
+                LikeStatus::NoReaction => 0,
+            },
+            created_at: Utc::now(),
+        };
+
+        uchat_query::post::react(&mut conn, reaction)?;
+
+        Ok((
+            StatusCode::Ok,
+            Json(ReactOk {
+                like_status: self.like_status,
+                likes: 0,
+                dislikes: 0,
+            })
+        ))
+    }
+}

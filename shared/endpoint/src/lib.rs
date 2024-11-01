@@ -33,4 +33,6 @@ route!("/account/create" => user::endpoint::CreateUser);
 route!("/post/new" => post::endpoint::NewPost);
 route!("/post/bookmark" => post::endpoint::Bookmark);
 route!("/posts/trending" => post::endpoint::TrendingPosts);
+route!("/posts/react" => post::endpoint::React);
+
 
