@@ -2,7 +2,7 @@
 
 use dioxus::prelude::*;
 use uchat_domain::ids::PostId;
-us uchat_endpoint::post::types::LikeStatus;
+use uchat_endpoint::post::types::LikeStatus;
 use crate::{prelude::*, util::api_client};
 
 #[inline_props]

@@ -139,7 +139,7 @@ pub fn get_bookmark(
     }
 
 #[derive(Clone, Debug, DieselNewType, Deserialize, Serialize)]
-pub struct ReactionData(serde_json::Valuie);
+pub struct ReactionData(serde_json::Value);
 
 #[derive(Clone, Debug, Queryable, Insertable, Deserialize, Serialize)]
 #[diesel(table_name = schema::reactions)]
@@ -174,7 +174,7 @@ pub fn get_reaction(
     let pid = post_id;
     let uid = user_id;
     {
-        use crate::schema::reations::dsl::*;
+        use crate::schema::reactions::dsl::*;
         reactions
             .filter(post_id.eq(pid))
             .filter(user_id.eq(uid))
