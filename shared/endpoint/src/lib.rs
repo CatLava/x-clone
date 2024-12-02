@@ -32,6 +32,7 @@ route!("/account/create" => user::endpoint::CreateUser);
 // private authorize route
 route!("/post/new" => post::endpoint::NewPost);
 route!("/post/bookmark" => post::endpoint::Bookmark);
+route!("/post/boost" => post::endpoint::Boost);
 route!("/posts/trending" => post::endpoint::TrendingPosts);
 route!("/posts/react" => post::endpoint::React);
 
